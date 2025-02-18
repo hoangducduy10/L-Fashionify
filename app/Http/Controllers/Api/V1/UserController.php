@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeMail;
+
 
 class UserController extends Controller
 {
@@ -27,6 +30,8 @@ class UserController extends Controller
             $data['password'] = bcrypt($data['password']);
 
             $user = User::create($data);
+
+            Mail::to($user->email)->send(new WelcomeMail($user));
 
             return response()->json([
                 'message' => 'Tạo người dùng thành công!',
