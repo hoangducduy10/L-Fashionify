@@ -18,34 +18,6 @@ class UserController extends Controller
         return response()->json(User::all(), 200);
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email',
-                'password' => 'required|string|min:8',
-            ]);
-
-            $data['password'] = bcrypt($data['password']);
-
-            $user = User::create($data);
-
-            Mail::to($user->email)->send(new WelcomeMail($user));
-
-            return response()->json([
-                'message' => 'Tạo người dùng thành công!',
-                'user' => $user
-            ], 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Dữ liệu không hợp lệ.',
-                'errors' => $e->errors(),
-            ], 422);
-        }
-    }
-
-
     public function show($id)
     {
         try {
