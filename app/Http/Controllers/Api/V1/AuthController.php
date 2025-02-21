@@ -8,6 +8,7 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -21,8 +22,6 @@ class AuthController extends Controller
                 'email' => 'required|string|email|unique:users,email',
                 'password' => 'required|string|min:8',
             ]);
-
-            $data['password'] = bcrypt($data['password']);
 
             $user = User::create($data);
 
@@ -46,6 +45,55 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'errors' => $th->getMessage(),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function login()
+    {
+        try {
+            request()->validate([
+                'email' => 'required|email',
+                'password' => 'required|min:8',
+            ]);
+
+            $user = User::where('email', request('email'))->first();
+
+            if (!$user || !Hash::check(request('password'), $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['The provided credentials are incorrect!']
+                ]);
+            }
+
+            $token = $user->createToken($user->id)->plainTextToken;
+
+            return response()->json([
+                'token' => $token
+            ]);
+        } catch (\Throwable $th) {
+            if ($th instanceof ValidationException) {
+                return response()->json([
+                    'errors' => $th->errors(),
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            return response()->json([
+                'errors' => $th->getMessage()
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+    }
+
+    public function logout()
+    {
+        try {
+            request()->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'message' => 'Logged out successfully!'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
