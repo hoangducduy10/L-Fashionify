@@ -7,20 +7,21 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::prefix('v1')->group(function () {
-    // Middleware meaning that have to login to access
-    Route::middleware('auth:sanctum')
-        ->get('/user', function (Request $request) {
-            return $request->user();
-        });
 
-    // User api
-    Route::get('users', [UserController::class, 'index'])->name('users.index');
-    Route::get('users/{id}', [UserController::class, 'show'])->name('users.show');
-    Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    // Authenticated routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', [AuthController::class, 'me']);
+        Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('change-password', [AuthController::class, 'changePassword']);
+    });
 
-    // Auth api
+    // User API 
+    Route::get('users', [UserController::class, 'getAllUsers'])->name('users.getAllUsers');
+    Route::get('users/{id}', [UserController::class, 'getUserById'])->name('users.getUserById');
+
+    // Auth API
     Route::post('login', [AuthController::class, 'login'])->name('login');
     Route::post('register', [AuthController::class, 'register'])->name('register');
-    Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
 });

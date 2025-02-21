@@ -13,12 +13,12 @@ use App\Mail\WelcomeMail;
 
 class UserController extends Controller
 {
-    public function index()
+    public function getAllUsers()
     {
         return response()->json(User::all(), 200);
     }
 
-    public function show($id)
+    public function getUserById($id)
     {
         try {
             $user = User::findOrFail($id);

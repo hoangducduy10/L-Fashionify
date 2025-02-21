@@ -97,4 +97,44 @@ class AuthController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function me()
+    {
+        return response()->json([
+            'user' => request()->user()
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'current_password' => 'required|string|min:8',
+                'new_password' => 'required|string|min:8|confirmed'
+            ]);
+
+            $user = $request->user();
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'errors' => ['current_password'
+                    => ['Current password is incorrect!']]
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $user->update([
+                'password' => Hash::make($request->new_password)
+            ]);
+
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Password changed successfully. Please login again!'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
