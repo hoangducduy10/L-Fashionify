@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
-
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
@@ -31,10 +31,24 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $user = User::findorFail($id);
-            $user->update($request->all());
+            if ($request->user()->id != $id) {
+                return response()->json([
+                    'message' => 'Unauthorized action.'
+                ], Response::HTTP_FORBIDDEN);
+            }
 
-            return response()->json($user, 200);
+            $request->validate([
+                'name' => 'string|max:255',
+                'email' => 'string|email|unique:users,email,' . $id
+            ]);
+
+            $user = User::findOrFail($id);
+            $user->update($request->only(['name', 'email']));
+
+            return response()->json([
+                'message' => 'User updated successfully!',
+                'user' => $user
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Can not find user with id: ' . $id,

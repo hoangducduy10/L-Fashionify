@@ -8,20 +8,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
-    // Authenticated routes
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/user', [AuthController::class, 'me']);
-        Route::put('users/{id}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
-        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-        Route::post('change-password', [AuthController::class, 'changePassword']);
+    // Auth API
+    Route::controller(AuthController::class)->group(function () {
+        Route::post('login', 'login')->name('auth.login');
+        Route::post('register', 'register')->name('auth.register');
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::get('/user', 'me')->name('auth.me');
+            Route::post('logout', 'logout')->name('auth.logout');
+            Route::post('change-password', 'changePassword')->name('auth.changePassword');
+        });
     });
 
-    // User API 
-    Route::get('users', [UserController::class, 'getAllUsers'])->name('users.getAllUsers');
-    Route::get('users/{id}', [UserController::class, 'getUserById'])->name('users.getUserById');
+    // User API
+    Route::controller(UserController::class)->group(function () {
+        Route::get('users', 'getAllUsers')->name('users.getAllUsers');
+        Route::get('users/{id}', 'getUserById')->name('users.getUserById');
 
-    // Auth API
-    Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::post('register', [AuthController::class, 'register'])->name('register');
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::put('users/{id}', 'update')->name('users.update');
+            Route::delete('users/{id}', 'destroy')->name('users.destroy');
+        });
+    });
 });
