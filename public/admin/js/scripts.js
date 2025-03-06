@@ -247,19 +247,5 @@
     // popovers
 
     $(".popovers").popover();
-
-    $("#editCategoryModal").on("show.bs.modal", function (event) {
-      var button = $(event.relatedTarget); // Button that triggered the modal
-      var id = button.data("id"); // Extract info from data-* attributes
-      var name = button.data("name");
-      var description = button.data("description");
-      var status = button.data("status");
-
-      var modal = $(this);
-      modal.find("#editCategoryForm").attr("action", "/admin/categories/" + id);
-      modal.find("#categoryName").val(name);
-      modal.find("#categoryDescription").val(description);
-      modal.find("#status").prop("checked", status);
-    });
   });
 })(jQuery);

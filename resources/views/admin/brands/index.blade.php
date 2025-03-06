@@ -4,14 +4,14 @@
 <div class="table-agile-info">
     <div class="panel panel-default">
         <div class="panel-heading">
-            Product Category List
+            Brand List
         </div>
 
         <div class="table-responsive">
             <table class="table table-striped b-t b-light">
                 <thead>
                     <tr>
-                        <th>Category Name</th>
+                        <th>Brand Name</th>
                         <th>Description</th>
                         <th>Created Date</th>
                         <th>Status</th>
@@ -19,27 +19,33 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($categories as $category)
+                    @foreach($brands as $brand)
                     <tr>
-                        <td>{{ $category->name }}</td>
-                        <td>{{ $category->description }}</td>
-                        <td>{{ $category->created_at->format('d/m/Y') }}</td>
+                        <td>{{ $brand->name }}</td>
                         <td>
-                            @if($category->status)
+                            @if($brand->thumbnail)
+                                <img src="{{ $brand->thumbnail }}" width="60" alt="Brand Thumbnail">
+                            @else
+                                <img src="{{ asset('images/default-thumbnail.jpg') }}" width="60" alt="No Image">
+                            @endif
+                        </td>
+                        <td>{{ $brand->created_at->format('d/m/Y') }}</td>
+                        <td>
+                            @if($brand->status)
                                 <span class="text-success">Active</span>
                             @else
                                 <span class="text-danger">Inactive</span>
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.categories.edit', $category->id) }}">
+                            <a href="{{ route('admin.brands.edit', $brand->id) }}">
                                 <i class="fa fa-pencil-square-o text-success"></i>
                             </a>
 
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="confirm-form" style="display:inline;">
+                            <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" style="display:inline;" class="confirm-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="confirm-btn" style="border:none; background:none; cursor:pointer;">
+                                <button type="submit" style="border:none; background:none; cursor:pointer;" class="confirm-btn">
                                     <i class="fa fa-trash text-danger"></i>
                                 </button>
                             </form>

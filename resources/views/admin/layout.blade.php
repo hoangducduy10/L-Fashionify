@@ -91,6 +91,16 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 						<li><a href="{{ route('admin.categories.create') }}">Add Category</a></li>
                     </ul>
                 </li>
+                <li class="sub-menu">
+                    <a href="javascript:;">
+                        <i class="fa fa-tags"></i>
+                        <span>Brand</span>
+                    </a>
+                    <ul class="sub">
+						<li class=""><a href="{{ route('admin.brands.index') }}">Brand List</a></li>
+						<li><a href="{{ route('admin.brands.create') }}">Add Brand</a></li>
+                    </ul>
+                </li>
             </ul>            </div>
         <!-- sidebar menu end-->
     </div>
@@ -116,6 +126,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <script src="{{ asset('admin/js/scripts.js')}}"></script>
 <script src="{{ asset('admin/js/jquery.slimscroll.js')}}"></script>
 <script src="{{ asset('admin/js/jquery.nicescroll.js')}}"></script>
+<script src="{{ asset('admin/js/modal-handler.js')}}"></script>
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js/flot-chart/excanvas.min.js"></script><![endif]-->
 <script src="{{ asset('admin/js/jquery.scrollTo.js')}}"></script>
 <!-- morris JavaScript -->	

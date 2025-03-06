@@ -223,6 +223,10 @@ ul.sidebar-menu li a.active i {
 .footer {
   background: #d19a98;
   padding: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
 }
 .footer p {
   color: #fff;
@@ -810,8 +814,7 @@ ul.top-menu > li > a:focus {
   font-weight: 400;
   padding: 0 16px;
   background: #ddede0;
-  border-top-right-radius: 2px;
-  border-top-left-radius: 2px;
+  border-radius: 4px;
   text-transform: uppercase;
   text-align: center;
 }

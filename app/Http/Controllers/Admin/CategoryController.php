@@ -61,6 +61,7 @@ class CategoryController extends Controller
             'status' => $request->boolean('status')
         ]);
 
+
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
     }
 
