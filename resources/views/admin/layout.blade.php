@@ -71,39 +71,31 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <!--sidebar start-->
 <aside>
     <div id="sidebar" class="nav-collapse">
-        <!-- sidebar menu start-->
-        <div class="leftside-navigation">
-            <ul class="sidebar-menu" id="nav-accordion">
-                <li>
-                    <a class="active" href="{{ route('admin.dashboard') }}">
-                        <i class="fa fa-dashboard"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                
-                <li class="sub-menu">
-                    <a href="javascript:;">
-                        <i class="fa fa-book"></i>
-                        <span>Category</span>
-                    </a>
-                    <ul class="sub">
-						<li><a href="{{ route('admin.categories.index') }}">Product Category List</a></li>
-						<li><a href="{{ route('admin.categories.create') }}">Add Category</a></li>
-                    </ul>
-                </li>
-                <li class="sub-menu">
-                    <a href="javascript:;">
-                        <i class="fa fa-tags"></i>
-                        <span>Brand</span>
-                    </a>
-                    <ul class="sub">
-						<li class=""><a href="{{ route('admin.brands.index') }}">Brand List</a></li>
-						<li><a href="{{ route('admin.brands.create') }}">Add Brand</a></li>
-                    </ul>
-                </li>
-            </ul>            </div>
-        <!-- sidebar menu end-->
+    <!-- sidebar menu start-->
+    <div class="leftside-navigation">
+        <ul class="sidebar-menu" id="nav-accordion">
+            <li>
+                <a class="active" href="{{ route('admin.dashboard') }}">
+                    <i class="fa fa-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sub-menu">
+                <a href="javascript:;">
+                    <i class="fa fa-th-large"></i>
+                    <span>Product</span>
+                </a>
+                <ul class="sub">
+                    <li><a href="{{ route('admin.categories.index') }}"><i class="fa fa-list"></i> Category Management</a></li>
+                    <li><a href="{{ route('admin.brands.index') }}"><i class="fa fa-tags"></i> Brand Management</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
+    <!-- sidebar menu end-->
+</div>
+
 </aside>
 <!--sidebar end-->
 <!--main content start-->

@@ -6078,6 +6078,9 @@ button.list-group-item-danger.active:hover {
   color: #333;
   background-color: #f5f5f5;
   border-color: #ddd;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
 }
 .panel-default > .panel-heading + .panel-collapse > .panel-body {
   border-top-color: #ddd;
