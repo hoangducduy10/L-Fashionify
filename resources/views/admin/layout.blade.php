@@ -87,6 +87,7 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
                     <span>Product</span>
                 </a>
                 <ul class="sub">
+					<li><a href="{{ route('admin.products.index') }}"><i class="fa fa-cube"></i> Product Management</a></li>
                     <li><a href="{{ route('admin.categories.index') }}"><i class="fa fa-list"></i> Category Management</a></li>
                     <li><a href="{{ route('admin.brands.index') }}"><i class="fa fa-tags"></i> Brand Management</a></li>
                 </ul>

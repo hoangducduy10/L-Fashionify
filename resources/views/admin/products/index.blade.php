@@ -1,11 +1,12 @@
+<!-- resources/views/admin/products/index.blade.php -->
 @extends('admin.layout')
-@section('admin.content')
 
+@section('admin.content')
 <div class="table-agile-info">
     <div class="panel panel-default">
-        <div class="panel-heading">Brand Management</div>
+        <div class="panel-heading">Product Management</div>
 
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#brandModal" style="margin: 10px;">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#productModal" style="margin: 10px;">
             <i class="fa fa-plus"></i> Add New
         </button>
 
@@ -14,39 +15,43 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Brand Name</th>
+                        <th>Product Name</th>
                         <th>Thumbnail</th>
-                        <th>Created Date</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($brands as $brand)
+                    @foreach($products as $product)
                         <tr>
-                            <td>{{ $brand->id }}</td>
-                            <td>{{ $brand->name }}</td>
+                            <td>{{ $product->id }}</td>
+                            <td>{{ $product->name }}</td>
                             <td>
-                                @if($brand->thumbnail)
-                                    <img src="{{ $brand->thumbnail }}" width="80" alt="Brand Logo">
+                                @if($product->thumbnail)
+                                    <img src="{{ $product->thumbnail }}" width="60" alt="Product Thumbnail">
                                 @else
-                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="img-thumbnail default-logo" alt="Brand Logo">
+                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="img-thumbnail default-logo" alt="No Image">
                                 @endif
                             </td>
-                            <td>{{ $brand->created_at->format('d/m/Y') }}</td>
+                            <td>{{ $product->brand->name ?? 'N/A' }}</td>
+                            <td>{{ $product->category->name ?? 'N/A' }}</td>
+                            <td>{{ optional($product->productDetails->first())->quantity ?? 'N/A' }}</td>
                             <td>
-                                @if($brand->status)
+                                @if($product->status)
                                     <span class="text-success">Active</span>
                                 @else
                                     <span class="text-danger">Inactive</span>
                                 @endif
                             </td>
                             <td>
-                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editBrandModal{{ $brand->id }}">
+                                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editProductModal{{ $product->id }}">
                                     <i class="fa fa-pencil"></i>
-                            </button>
+                                </button>
 
-                                <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" style="display:inline;" class="confirm-form">
+                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger confirm-btn">
@@ -55,8 +60,7 @@
                                 </form>
                             </td>
                         </tr>
-
-                        @include('admin.brands.form', ['brand' => $brand])
+                        @include('admin.products.form', ['product' => $product])
                     @endforeach
                 </tbody>
             </table>
@@ -64,7 +68,7 @@
     </div>
 </div>
 
-@include('admin.brands.form', ['brand' => null])
+@include('admin.products.form', ['product' => null])
 @include('components.alerts.success')
 @include('components.alerts.error')
 @include('components.confirm')

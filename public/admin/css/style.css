@@ -223,18 +223,35 @@ ul.sidebar-menu li a.active i {
 .footer {
   background: #d19a98;
   padding: 20px;
-  position: absolute;
-  bottom: 0;
+  position: relative;
   width: 100%;
   text-align: center;
+  bottom: 0;
+  margin-top: auto;
 }
+
+html,
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#main-content {
+  flex: 1;
+}
+
 .footer p {
   color: #fff;
   letter-spacing: 1px;
+  margin: 0;
 }
+
 .footer p a {
   color: #744e7d;
+  text-decoration: none;
 }
+
 .footer p a:hover {
   color: #fff;
 }
@@ -268,6 +285,15 @@ ul.sidebar-menu li a.active i {
   height: 80px;
   position: relative;
 }
+.default-logo {
+  width: 80px;
+  height: 35px;
+  object-fit: contain;
+  border: 1px solid #ddd;
+  padding: 3px;
+  background: white;
+}
+
 a.logo {
   font-size: 32px;
   color: #fff;
@@ -3482,19 +3508,50 @@ div#graph11 {
   }
 }
 
+.modal-lg {
+  width: 900px;
+}
+.form-horizontal .control-label {
+  padding-top: 7px;
+  margin-bottom: 0;
+  text-align: right;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.input-group-addon {
+  min-width: 40px;
+  text-align: center;
+}
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type="file"] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: pointer;
+  display: block;
+}
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 50px;
+  height: 24px;
 }
-
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -3503,26 +3560,45 @@ div#graph11 {
   right: 0;
   bottom: 0;
   background-color: #ccc;
+  -webkit-transition: 0.4s;
   transition: 0.4s;
-  border-radius: 34px;
 }
-
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
+  height: 16px;
+  width: 16px;
   left: 4px;
   bottom: 4px;
   background-color: white;
+  -webkit-transition: 0.4s;
   transition: 0.4s;
+}
+.slider.round {
+  border-radius: 24px;
+}
+.slider.round:before {
   border-radius: 50%;
 }
-
 input:checked + .slider {
   background-color: #2196f3;
 }
-
 input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
   transform: translateX(26px);
+}
+.help-block.text-danger {
+  color: #a94442;
+  margin-top: 5px;
+  font-size: 12px;
+}
+.thumbnail-preview {
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  padding: 5px;
+  border-radius: 4px;
+}
+.mb-2 {
+  margin-bottom: 10px;
 }

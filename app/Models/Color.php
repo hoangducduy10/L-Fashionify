@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Brand extends Model
+class Color extends Model
 {
     use HasFactory;
 
-    protected $table = 'brands';
+    protected $table = 'colors';
     protected $primaryKey = 'id';
     public $timestamps = true;
-    protected $fillable = ['name', 'thumbnail', 'status'];
+    protected $fillable = ['name', 'hex_code', 'status'];
 
-    public function products()
+    public function productDetails()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany('ProductDetail::class');
     }
 }

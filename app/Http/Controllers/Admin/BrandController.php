@@ -11,7 +11,7 @@ class BrandController extends Controller
 {
     public function index()
     {
-        $brands = Brand::orderBy('created_at', 'desc')->get();
+        $brands = Brand::orderBy('id', 'asc')->get();
         return view('admin.brands.index', compact('brands'));
     }
 
@@ -24,7 +24,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'status' => 'sometimes|boolean'
         ]);
 
@@ -54,7 +54,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'status' => 'sometimes|boolean'
         ]);
 
