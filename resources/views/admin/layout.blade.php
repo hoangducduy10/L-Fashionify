@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
 <title>Dashboard | L-Fashionify</title>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Visitors Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, 
@@ -119,7 +120,6 @@ Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, Sony
 <script src="{{ asset('admin/js/scripts.js')}}"></script>
 <script src="{{ asset('admin/js/jquery.slimscroll.js')}}"></script>
 <script src="{{ asset('admin/js/jquery.nicescroll.js')}}"></script>
-<script src="{{ asset('admin/js/modal-handler.js')}}"></script>
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js/flot-chart/excanvas.min.js"></script><![endif]-->
 <script src="{{ asset('admin/js/jquery.scrollTo.js')}}"></script>
 <!-- morris JavaScript -->	

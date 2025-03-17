@@ -53,28 +53,47 @@
                                         <select class="form-control" id="color_id" name="color_id" required>
                                             <option value="">Select Color</option>
                                             @foreach($colors as $color)
-                                                <option value="{{ $color->id }}" {{ old('color_id', optional($product?->productDetails->first())->color_id) == $color->id ? 'selected' : '' }}>{{ $color->name }}</option>
+                                                <option value="{{ $color->id }}" 
+                                                    {{ old('color_id', $product && $product->productDetails ? optional($product->productDetails->first())->color_id : '') == $color->id ? 'selected' : '' }}>
+                                                    {{ $color->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
+
+                                 <!-- Thumbnail -->
+                                    <div class="col-md-4 text-center">
+                                        <label>Thumbnail</label>
+                                        <div id="thumbnailContainer" class="mb-2">
+                                            <img id="thumbnailPreview" src="{{ $product->thumbnail ?? asset('images/default-thumbnail.jpg') }}"
+                                                class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover; display: {{ isset($product->thumbnail) ? 'block' : 'none' }};">
+                                        </div>
+                                        <label class="btn btn-primary btn-file">
+                                            <i class="fa fa-folder-open"></i> Select 
+                                            <input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="previewThumbnail(event)" hidden>
+                                        </label>
+                                    </div>
     
+                                
+                            </div>
+                            
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label" for="size">Size <span class="text-danger">*</span></label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" id="size" name="size" value="{{ old('size', optional($product?->productDetails->first())->size) }}" required>
+                                    <div class="col-sm-8 mb-2">
+                                        <input type="text" class="form-control" id="size" name="size" 
+                                            value="{{ old('size', $product && $product->productDetails ? optional($product->productDetails->first())->size : '') }}" required>
                                     </div>
                                 </div>
-    
-                            </div>
-    
-                            <div class="col-md-6">
+
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label" for="price">Price <span class="text-danger">*</span></label>
                                     <div class="col-sm-8">
                                         <div class="input-group">
                                             <span class="input-group-addon">$</span>
-                                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" value="{{ old('price', optional($product?->productDetails->first())->price) }}" required>
+                                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" 
+                                                value="{{ old('price', $product && $product->productDetails ? optional($product->productDetails->first())->price : '') }}" required>
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +103,8 @@
                                     <div class="col-sm-8">
                                         <div class="input-group">
                                             <span class="input-group-addon">$</span>
-                                            <input type="number" class="form-control" id="discount_price" name="discount_price" step="0.01" min="0" value="{{ old('discount_price', optional($product?->productDetails->first())->discount_price) }}">
+                                            <input type="number" class="form-control" id="discount_price" name="discount_price" step="0.01" min="0" 
+                                             value="{{ old('discount_price', $product && $product->productDetails ? optional($product->productDetails->first())->discount_price : '') }}">
                                         </div>
                                     </div>
                                 </div>
@@ -92,28 +112,35 @@
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label" for="quantity">Quantity <span class="text-danger">*</span></label>
                                     <div class="col-sm-8 mb-2">
-                                        <input type="number" class="form-control" id="quantity" name="quantity" min="0" value="{{ old('quantity', optional($product?->productDetails->first())->quantity) }}" required>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" min="0" 
+                                        value="{{ old('quantity', $product && $product->productDetails ? optional($product->productDetails->first())->quantity : '') }}" required>
                                     </div>
                                 </div>
-    
+
                                 <div class="form-group">
-                                    <label class="col-sm-4 control-label">Thumbnail</label>
-                                    <div class="col-sm-8 text-center">
-                                        <div class="thumbnail-preview mb-2">
-                                            <img id="productThumbnailPreview" 
-                                                src="{{ isset($product) && $product->thumbnail ? $product->thumbnail : asset('images/default-thumbnail.jpg') }}" 
-                                                class="img-thumbnail" 
-                                                style="width: 120px; height: 120px; object-fit: cover;">
-                                        </div>
-                                        <div class="input-group">
+                                    <label class="col-sm-4 control-label">Product Images</label>
+                                    <div class="col-sm-8">
+                                        <div class="image-upload-container">
+                                            <div id="imagesContainer">
+                                                @if(isset($product) && $product->images)
+                                                    @foreach($product->images as $image)
+                                                        <div class="image-preview" id="image-{{ $image->id }}">
+                                                            <img src="{{ $image->url }}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;">
+                                                            <button type="button" class="btn btn-danger btn-xs remove-image" data-id="{{ $image->id }}">
+                                                                &times;
+                                                            </button>
+                                                        </div>
+                                                    @endforeach
+                                                @endif
+                                            </div>
                                             <label class="btn btn-primary btn-file">
-                                                <i class="fa fa-folder-open"></i> Browse
-                                                <input type="file" id="thumbnail" name="thumbnail" accept="image/*" onchange="previewImage(event)" hidden>
+                                                <i class="fa fa-upload"></i> Choose Images
+                                                <input type="file" id="images" name="images[]" accept="image/*" multiple onchange="previewImages(event)" hidden>
                                             </label>
                                         </div>
                                     </div>
                                 </div>
-    
+
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label">Status</label>
                                     <div class="col-sm-8">
@@ -123,6 +150,7 @@
                                         </label>
                                     </div>
                                 </div>
+
     
                             </div>
                         </div>
@@ -139,16 +167,6 @@
     </div>
 </div>
 
-<script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var preview = document.getElementById('productThumbnailPreview');
-            preview.src = reader.result;
-        }
-        if (event.target.files[0]) {
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    }
-</script>
+<script src="{{ asset('admin/js/product.js') }}"></script>
+
 

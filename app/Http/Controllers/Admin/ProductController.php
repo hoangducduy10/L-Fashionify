@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\UploadProductImages;
 use App\Models\Product;
 use App\Models\ProductDetail;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
+use App\Models\ProductImage;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -17,20 +21,22 @@ class ProductController extends Controller
     {
         $products = Product::with(['brand', 'category', 'productDetails.color'])
             ->orderBy('id', 'asc')->get();
-        $brands = Brand::all();
-        $categories = Category::all();
-        $colors = Color::all();
 
-        return view('admin.products.index', compact('products', 'brands', 'categories', 'colors'));
+        return view('admin.products.index', [
+            'products' => $products,
+            'brands' => Brand::all(),
+            'categories' => Category::all(),
+            'colors' => Color::all(),
+        ]);
     }
 
     public function create()
     {
-        $brands = Brand::all();
-        $categories = Category::all();
-        $colors = Color::all();
-
-        return view('admin.products.create', compact('brands', 'categories', 'colors'));
+        return view('admin.products.create', [
+            'brands' => Brand::all(),
+            'categories' => Category::all(),
+            'colors' => Color::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -47,12 +53,17 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'quantity' => 'required|integer|min:1',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
         ]);
 
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
-            $uploadedFileUrl = Cloudinary::upload($request->file('thumbnail')->getRealPath())->getSecurePath();
-            $thumbnailPath = $uploadedFileUrl;
+            $uploadedFile = $request->file('thumbnail');
+            $uploadResponse = Cloudinary::upload($uploadedFile->getRealPath(), [
+                'folder' => 'products/thumbnails',
+                'transformation' => [['quality' => 'auto', 'fetch_format' => 'auto']]
+            ]);
+            $thumbnailPath = $uploadResponse->getSecurePath();
         }
 
         $product = Product::create([
@@ -73,12 +84,19 @@ class ProductController extends Controller
             'quantity' => $request->quantity,
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $storagePath = $image->store('private/uploads');
+                dispatch(new UploadProductImages(Storage::path($storagePath), $product->id));
+            }
+        }
+
+        return redirect()->route('admin.products.index')->with('success', 'Product created successfully! Images are uploading in the background.');
     }
 
     public function edit($id)
     {
-        $product = Product::with('productDetails')->findOrFail($id);
+        $product = Product::with('productDetails')->find($id);
         $brands = Brand::all();
         $categories = Category::all();
         $colors = Color::all();
@@ -100,18 +118,24 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'quantity' => 'required|integer|min:1',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048'
         ]);
 
         $product = Product::findOrFail($id);
 
+        // Xóa ảnh cũ trên Cloudinary nếu có
         if ($request->hasFile('thumbnail')) {
             if ($product->thumbnail) {
-                $publicId = pathinfo($product->thumbnail, PATHINFO_FILENAME);
+                $publicId = pathinfo(parse_url($product->thumbnail, PHP_URL_PATH), PATHINFO_FILENAME);
                 Cloudinary::destroy($publicId);
             }
 
-            $uploadedFileUrl = Cloudinary::upload($request->file('thumbnail')->getRealPath())->getSecurePath();
-            $product->thumbnail = $uploadedFileUrl;
+            $uploadedFile = $request->file('thumbnail');
+            $uploadResponse = Cloudinary::upload($uploadedFile->getRealPath(), [
+                'folder' => 'products/thumbnails',
+                'transformation' => [['quality' => 'auto', 'fetch_format' => 'auto']]
+            ]);
+            $product->thumbnail = $uploadResponse->getSecurePath();
         }
 
         $product->update([
@@ -122,29 +146,29 @@ class ProductController extends Controller
             'status' => $request->boolean('status')
         ]);
 
-        $productDetail = ProductDetail::firstOrNew(['product_id' => $product->id]);
+        ProductDetail::updateOrCreate(
+            ['product_id' => $product->id],
+            [
+                'color_id' => $request->color_id,
+                'size' => $request->size,
+                'price' => $request->price,
+                'discount_price' => $request->discount_price,
+                'quantity' => $request->quantity,
+            ]
+        );
 
-        if ($productDetail) {
-            $productDetail->update([
-                'color_id' => $request->color_id,
-                'size' => $request->size,
-                'price' => $request->price,
-                'discount_price' => $request->discount_price,
-                'quantity' => $request->quantity,
-            ]);
-        } else {
-            ProductDetail::create([
-                'product_id' => $product->id,
-                'color_id' => $request->color_id,
-                'size' => $request->size,
-                'price' => $request->price,
-                'discount_price' => $request->discount_price,
-                'quantity' => $request->quantity,
-            ]);
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $storagePath = $image->store('private/uploads');
+                dispatch(new UploadProductImages(Storage::path($storagePath), $product->id));
+            }
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
+        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully! Images are uploading in the background.');
     }
+
+
+
 
     public function destroy($id)
     {
@@ -157,10 +181,32 @@ class ProductController extends Controller
             }
         }
 
+        $productImages = ProductImage::where('product_id', $id)->get();
+        foreach ($productImages as $image) {
+            if ($image->url) {
+                preg_match('/\/v\d+\/(.+?)\.\w+$/', $image->url, $matches);
+                if (!empty($matches[1])) {
+                    $publicId = $matches[1];
+                    Cloudinary::destroy($publicId);
+                }
+            }
+        }
+
         ProductDetail::where('product_id', $id)->delete();
         $product->delete();
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
+    }
+
+    public function deleteImage($id)
+    {
+        $image = ProductImage::findOrFail($id);
+
+        CloudinaryService::deleteImage($image->url);
+
+        $image->delete();
+
+        return response()->json(['success' => true, 'message' => 'Image deleted successfully']);
     }
 
     public function toggleStatus($id)

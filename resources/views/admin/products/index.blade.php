@@ -30,11 +30,7 @@
                             <td>{{ $product->id }}</td>
                             <td>{{ $product->name }}</td>
                             <td>
-                                @if($product->thumbnail)
-                                    <img src="{{ $product->thumbnail }}" width="60" alt="Product Thumbnail">
-                                @else
-                                    <img src="{{ asset('images/default-thumbnail.jpg') }}" class="img-thumbnail default-logo" alt="No Image">
-                                @endif
+                              <img src="{{ $product->thumbnail ?? asset('images/default-thumbnail.jpg') }}" width="60" alt="Product Thumbnail">
                             </td>
                             <td>{{ $product->brand->name ?? 'N/A' }}</td>
                             <td>{{ $product->category->name ?? 'N/A' }}</td>
@@ -51,7 +47,7 @@
                                     <i class="fa fa-pencil"></i>
                                 </button>
 
-                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="confirm-form" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger confirm-btn">

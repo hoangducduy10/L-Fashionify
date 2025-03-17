@@ -7,7 +7,7 @@
                 icon: "success",
                 title: @json(session('success')),
                 showConfirmButton: false,
-                timer: 3000
+                timer: 5000
             });
         });
     </script>

@@ -32,5 +32,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Product
         Route::resource('products', ProductController::class)->except(['show']);
+        Route::delete('products/delete-image/{id}', [ProductController::class, 'deleteImage'])->name('admin.products.delete-image');
     });
 });
