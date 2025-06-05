@@ -9,44 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
-
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function index()
+    public function getAllUsers()
     {
         return response()->json(User::all(), 200);
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email',
-                'password' => 'required|string|min:8',
-            ]);
-
-            $data['password'] = bcrypt($data['password']);
-
-            $user = User::create($data);
-
-            Mail::to($user->email)->send(new WelcomeMail($user));
-
-            return response()->json([
-                'message' => 'Tạo người dùng thành công!',
-                'user' => $user
-            ], 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Dữ liệu không hợp lệ.',
-                'errors' => $e->errors(),
-            ], 422);
-        }
-    }
-
-
-    public function show($id)
+    public function getUserById($id)
     {
         try {
             $user = User::findOrFail($id);
@@ -59,10 +31,24 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $user = User::findorFail($id);
-            $user->update($request->all());
+            if ($request->user()->id != $id) {
+                return response()->json([
+                    'message' => 'Unauthorized action.'
+                ], Response::HTTP_FORBIDDEN);
+            }
 
-            return response()->json($user, 200);
+            $request->validate([
+                'name' => 'string|max:255',
+                'email' => 'string|email|unique:users,email,' . $id
+            ]);
+
+            $user = User::findOrFail($id);
+            $user->update($request->only(['name', 'email']));
+
+            return response()->json([
+                'message' => 'User updated successfully!',
+                'user' => $user
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Can not find user with id: ' . $id,
